@@ -1,4 +1,3 @@
-#Заголовок
+# **Информация про MedAI**
 
-Интеллект карта прокта:
-https://miro.com/app/board/uXjVILbsN6I=/?share_link_id=515376861627
+Интеллект карта прокта: https://miro.com/app/board/uXjVILbsN6I=/?share_link_id=515376861627
