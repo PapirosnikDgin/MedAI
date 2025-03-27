@@ -13,6 +13,15 @@ from bs4 import BeautifulSoup
 оформить функциями или классом Scrapper
 """
 
+# text = """
+# Фактический адрес:
+# 1. 672038, Россия, Забайкальский край, г. Чита, Центральный административный район, ул. Новобульварная, д.163. Телефон регистратуры: 8 (3022) 71-51-00,
+# """
+#
+# address = re.search( r'\d+\.\s*(\d{6}),\s*([^,]+),\s*([^,]+),\s*(г\.\s*[^,]+),\s*([^,]+),\s*(ул\.\s*[^,]+),\s*(д\.\d+)\.',text)
+#
+# print(address.group().strip())
+
 # Настройка Selenium
 options = webdriver.ChromeOptions()
 options.add_argument('--headless')  # Запуск в фоновом режиме
@@ -40,8 +49,9 @@ try:
         # print("текст = ", text )
 
         # Поиск адресов
-        if "адрес" in text.lower():
-            address = re.search(r'\d+\.\s*\d{6},.*?\.', text)
+        if "россия" in text.lower():
+            address = re.search( r'\d+\.\s*(\d{6}),\s*([^,]+),\s*([^,]+),\s*(г\.\s*[^,]+),\s*([^,]+),\s*(ул\.\s*[^,]+),\s*(д\.\d+)\.',text)
+            # address = re.search(r'\d+\.\s*\d{6},.*?\.', text)
             if address:
                 data['адрес'].append(address.group().strip())
 
