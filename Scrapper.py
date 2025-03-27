@@ -1,12 +1,17 @@
 
-
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
-from bs4 import BeautifulSoup
+import json
 import time
+import re
+from bs4 import BeautifulSoup
+
+"""
+оформить функциями или классом Scrapper
+"""
 
 # Настройка Selenium
 options = webdriver.ChromeOptions()
@@ -14,8 +19,8 @@ options.add_argument('--headless')  # Запуск в фоновом режим�
 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
 # URL сайта
-# url = "https://clinica.chitgma.ru/contact"
-url = "https://clinica.chitgma.ru/grafik-raboty"
+url = "https://clinica.chitgma.ru/contact"
+# url = "https://clinica.chitgma.ru/grafik-raboty"
 driver.get(url)
 
 data = {
@@ -30,23 +35,55 @@ try:
     # Извлекаем текст всех <p> внутри этого элемента
     paragraphs = element.find_elements(By.TAG_NAME, 'p')
     for p in paragraphs:
-        print(p.text)
+        # print(p.text)
+        text =  p.text.strip()
+        # print("текст = ", text )
+
+        # Поиск адресов
+        if "адрес" in text.lower():
+            address = re.search(r'\d+\.\s*\d{6},.*?\.', text)
+            if address:
+                data['адрес'].append(address.group().strip())
+
+        # Поиск телефонов
+        elif "телефон" in text.lower():
+            phones = re.findall(r'\+?\d[\d\s()-]{4,}\d', text)
+            data['телефон'].extend(phones)
+
+        # Поиск email
+        elif "e-mail" in text.lower():
+            email = re.search(r'[\w\.-]+@[\w\.-]+', text)
+            if email:
+                data['e-mail'].append(email.group().strip())
 
 except NoSuchElementException:
     print("Элемент нет.")
 
 driver.quit()
 
+# Форматирование данных в JSON
+json_data = json.dumps(data, ensure_ascii=False, indent=4)
+print(json_data)
 
+
+
+
+
+#----------------------------------------------------------------------
 # data = {'name': 'John', 'age': 30, 'city': 'New York'}
-#
+
 # with open('data.json', 'w') as file:
 #     json.dump(data, file)
 
 
+
+
+
+
+
+#----------------------------------------------------------------------------------------------------
 # import requests
 # from bs4 import BeautifulSoup
-#
 # import json
 #
 #
