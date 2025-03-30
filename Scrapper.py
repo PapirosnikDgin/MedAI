@@ -77,6 +77,7 @@ def scrap_contacts(_filename):
     with open(f, 'w', encoding='utf-8') as file:
         json.dump(data, file, ensure_ascii=False, indent=4)
 
+    print("Данные успешно сохранены в", _filename)
     return json_data
 
 def scrap_graf_work(_filename, _url):
@@ -338,6 +339,11 @@ def run_Scrapper():
     scrap_graf_work('grafic_lab.json', url_lab)
     pdfINjson(pdf_price, json_price)
 
+def load_json(_json):
+    json_data = []
+    with open(_json,'r',encoding='utf-8') as f:
+        json_data = json.load(f)
+    return json_data
 
 url_dp = "https://clinica.chitgma.ru/diagnosticheskaya-poliklinika"
 url_lab = "https://clinica.chitgma.ru/kliniko-diagnosticheskaya-laboratoriya"
@@ -351,9 +357,30 @@ url_lab = "https://clinica.chitgma.ru/kliniko-diagnosticheskaya-laboratoriya"
 pdf_price = "1DP.pdf"
 json_price = "1DP.json"
 
-pdfINjson(pdf_price, json_price)
 
 
+# pdfINjson(pdf_price, json_price)
+
+
+# contacts = load_json("contacts.json")
+# grafic_dp = load_json("grafics_dp.json")
+# grafic_ddp = load_json("grafics_ddp.json")
+# grafic_lab = load_json("grafic_lab.json")
+# DP = load_json("1DP.json")
+
+# print(contacts["телефон"][4])
+# print(grafic_dp[0]['address'])
+# print(grafic_dp[0]["shedule"][0])
+# print(DP)
+
+
+
+
+
+
+
+
+# -------------------------------------------------------------------------------------------------------------------
 # для гига чата
 # OGM2N2NjZjUtOTU5OS00MDhiLWE5NzktN2M0YjM1Mjg3YjZhOjcwNzU4ZWQ0LWQ2NzEtNGI4Mi1iYjViLTVmMmRjZWQ1OTAzMg==
 
@@ -390,14 +417,6 @@ pdfINjson(pdf_price, json_price)
 #     res = giga.invoke(messages)
 #     messages.append(res)
 #     print("GigaChat: ", res.content)
-
-
-
-
-
-
-
-
 
 #------------------------------------------------------------------------------------------
 # current_time = datetime.now()
