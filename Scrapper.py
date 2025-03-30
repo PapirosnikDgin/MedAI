@@ -221,14 +221,14 @@ def scrap_graf_work_ddp(_filename):
     print("Данные успешно сохранены в", _filename)
 
     return json_data
-
-url_dp = "https://clinica.chitgma.ru/diagnosticheskaya-poliklinika"
-url_lab = "https://clinica.chitgma.ru/kliniko-diagnosticheskaya-laboratoriya"
-
-# scrap_contacts('contacts.json')
-scrap_graf_work('grafics_dp.json',url_dp)
-scrap_graf_work_ddp('grafics_ddp.json')
-scrap_graf_work('grafic_lab.json', url_lab)
+#
+# url_dp = "https://clinica.chitgma.ru/diagnosticheskaya-poliklinika"
+# url_lab = "https://clinica.chitgma.ru/kliniko-diagnosticheskaya-laboratoriya"
+#
+# # scrap_contacts('contacts.json')
+# scrap_graf_work('grafics_dp.json',url_dp)
+# scrap_graf_work_ddp('grafics_ddp.json')
+# scrap_graf_work('grafic_lab.json', url_lab)
 
 
 
@@ -262,24 +262,85 @@ scrap_graf_work('grafic_lab.json', url_lab)
 #
 
 
+import pdfplumber
 
-# from PyPDF2 import PdfReader
-# import re
-#
-# # Указываем путь к PDF-файлу
-# file_path = 'your_pdf_file.pdf'
-#
-# # Открываем PDF-файл для чтения
-# with open(file_path, 'rb') as file:
-#     reader = PdfReader(file)
-#
-# # Получаем список страниц
-# pages = reader.pages
-#
-# # Итерируем по каждой странице и извлекаем текст
-# for page in pages:
-#     text = page['/Contents'].decode('utf-8')
-#     # Используем регулярное выражение для поиска нужной информации
-#     matches = re.findall(r'\bВаша информация\b', text)
-#     if matches:
-#         print("Найдена нужная информация:", matches[0])
+def pdfINjson(_pdf, _json):
+    data = []
+    tables =[]
+
+    with pdfplumber.open(_pdf) as pdf:
+        # print(len(pdf.pages))
+        for page in pdf.pages:
+            # text = page.extract_text() + "\n"
+            tables.append(page.extract_tables())
+
+    # print(text)
+    # print(tables)
+    #
+    # print(tables[0][0][0])
+    # print(len(tables))
+
+    s = 0
+    rasdel = None
+    for table in tables:
+        # if s == 1 :
+        #     break
+        # else:
+            for i in range(len(table)):
+                row = table[i]
+                s+=1
+                for j in range(len(row)):
+                    d = row[j]
+                    r0 = r'\s*\d+'
+                    rr = r'^(?!\s*$).+'
+                    print(d[2])
+                    if (d[2]==None):
+                        d[2] = ""
+                    elif d[0] == None:
+                        d[0] =""
+                    elif d[1] == None:
+                        d[1] = ""
+                    elif d[3] == None:
+                        d[3] =""
+
+                    if (d[0] == "" )and (d[1]=="") and (d[3]=="") and (re.search(rr,d[2])):
+                        rasdel  = d[2]
+
+                    if re.search(r0,d[0]):
+                    # print(row[j])
+                        articul = d[0]
+                        code = d[1]
+                        name = d[2]
+                        price = d[3]
+
+                        data.append({
+                            'артикул': articul,
+                            'код': code,
+                            'услуга': name,
+                            'цена': price,
+                            'раздел': rasdel
+                        })
+
+                    # for k in range(len(d)):
+
+                    # print(row[0])
+                    # print(len(row[0]))
+                    #
+                    # print(row[1])
+                    # print(len(row[1]))
+
+
+    # Форматирование данных в JSON
+    json_data = json.dumps(data, ensure_ascii=False, indent=4)
+    # Сохранение в JSON файл
+    with open(_json, 'w', encoding='utf-8') as json_file:
+        json.dump(data, json_file, ensure_ascii=False, indent=4)
+
+    print("Данные успешно сохранены в ",_json)
+
+    return json_data
+
+pdf_price = "1DP.pdf"
+json_price = "1DP.json"
+
+pdfINjson(pdf_price, json_price)
