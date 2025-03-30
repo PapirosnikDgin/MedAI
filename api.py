@@ -15,7 +15,7 @@ class MessageResponse(BaseModel):
     response: str
     buttons: list  # Кнопки для отображения в интерфейсе
 
-@app.post("/handle_message/", response_model=MessageResponse)
+@app.post("/qa/", response_model=MessageResponse)
 async def handle_external_message(request: MessageRequest):
     """Обработка сообщений от внешней системы."""
     try:
